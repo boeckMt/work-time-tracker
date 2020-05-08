@@ -1,0 +1,19 @@
+.btn-action,
+.btn-clear {
+  font-size: 5rem;
+  cursor: pointer;
+  color: #fff;
+}
+
+.btn-action {
+  background-color: gray;
+
+  &.cheched-in {
+    background-color: green;
+  }
+}
+
+
+.btn-clear {
+  background-color: red;
+}
