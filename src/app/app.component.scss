@@ -1,11 +1,11 @@
 .btn-action,
 .btn-clear {
-  font-size: 5rem;
   cursor: pointer;
   color: #fff;
 }
 
 .btn-action {
+  font-size: 5rem;
   background-color: gray;
 
   &.cheched-in {
@@ -15,5 +15,25 @@
 
 
 .btn-clear {
+  font-size: 1rem;
   background-color: red;
+}
+
+.days-list {
+  .list-header {
+    list-style: none;
+    font-size: larger;
+  }
+
+  .list-footer {
+    list-style: none;
+  }
+
+  .time-overdue {
+    color: red;
+  }
+
+  .forgot-check-out {
+    color: green;
+  }
 }
