@@ -1,5 +1,6 @@
 <header></header>
 <main>
+  <div>{{currentTime.toISO()}}</div>
   <button class="btn-action" [ngClass]="{'cheched-in': action === 'checkIn'}"
     (click)="checkInOut()">{{(action === 'checkIn')?'Check-Out':'Check-In'}}</button>
   <button class="btn-clear" (click)="clearTimes()">Clear Times</button>
@@ -16,6 +17,9 @@
         [ngClass]="{'time-overdue': isFirst && t.action === 'checkOut', 'forgot-check-out': isLast && t.action === 'checkIn'}">
         {{t.time | date:'dd.MM - HH:mm:ss'}} - {{t.action}}</span>
     </li>
-    <li class="list-footer">Working time: {{checkInAndOutCorrectForDay(item.times).as('hours')}} - hours</li>
+    <li class="list-footer">
+      <span>Working time: {{checkInAndOutCorrectForDay(item.times).as('hours')}} - hours</span>
+      <span>{{getTimesForTheDay(item.times) | json}}</span>
+    </li>
   </ul>
 </main>

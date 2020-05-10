@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { DateTime, Duration } from 'luxon';
+import { DateTime, Duration, DateObjectUnits } from 'luxon';
 
 
 type actionType = 'checkIn' | 'checkOut';
@@ -19,6 +19,21 @@ interface Iday {
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+
+  // Gleitende Arbeitszeit (BO)
+  /**
+   * after 6 h 30 min break
+   * ater 9 h 45 min break
+   * break between 11:30 and 14:00
+   * normal allowed working time between 6:00 and 19:45
+   * Core working hours Mo. - Do. 9:00 - 15:00 | Fr. 9:00 - 13:00
+   */
+  weekWorkTime = Duration.fromObject({ hours: 39 });
+  maxDayWorkTime = Duration.fromObject({ hours: 10 });
+  // -------------------------------------
+
+
+  currentTime = DateTime.local();
   timesKey = 'time-recording-times';
   actionKey = 'time-recording-action';
   action: actionType = null;
@@ -36,6 +51,10 @@ export class AppComponent {
     daysMap.forEach((value, key) => {
       this.days.push({ day: key, times: value });
     });
+
+
+    /*  const startAndEnd = this.calcSartAndEndTime(Duration.fromObject({ hours: 8.23 }));
+     console.log(startAndEnd); */
   }
 
   checkInOut() {
@@ -89,7 +108,7 @@ export class AppComponent {
   /**
    * group array in days with keyGetter function
    */
-  groupBy(list: Itime[], keyGetter: (item: Itime) => string) {
+  private groupBy(list: Itime[], keyGetter: (item: Itime) => string) {
     const map = new Map();
     list.forEach((item) => {
       const key = keyGetter(item);
@@ -109,7 +128,7 @@ export class AppComponent {
    * check what to do if day starts with checkOut?? -> forgot to checkOut or work over night...
    * what to do if day ends with checkIn?? -> forgot to checkOut or work over night...
    */
-  getDayDuaration(times: Itime[]) {
+  private getDayDuaration(times: Itime[]) {
     /** number in minutes */
     const durations: Duration[] = [];
     times.map((item, i) => {
@@ -160,5 +179,39 @@ export class AppComponent {
       }
     }
     return duration;
+  }
+
+  private calcSartAndEndTime(duration: Duration, start: DateObjectUnits = { hour: 8, minute: 0, second: 0, millisecond: 0 }) {
+    const current = DateTime.local();
+    const startTime = current.set(start);
+    if (!duration.isValid) {
+      return;
+    }
+
+    const breakTime = this.getTimeForBraek(duration);
+    const workAndBreak = duration.plus(breakTime);
+    const endTime = startTime.plus(workAndBreak);
+    return {
+      start: startTime.toObject(),
+      end: endTime.toObject()
+    };
+  }
+
+  private getTimeForBraek(duration: Duration) {
+    console.log('getTimeForBraek', duration);
+    const durHours = duration.as('hours');
+    if (durHours > 6 && durHours <= 9) {
+      return Duration.fromObject({ minutes: 30 });
+    } else if (durHours > 9) {
+      return Duration.fromObject({ minutes: 45 });
+    } else {
+      return Duration.fromMillis(0);
+    }
+  }
+
+  getTimesForTheDay(times: Itime[]) {
+    const worktime = this.checkInAndOutCorrectForDay(times);
+    console.log('getTimesForTheDay', worktime.isValid)
+    return this.calcSartAndEndTime(worktime);
   }
 }
