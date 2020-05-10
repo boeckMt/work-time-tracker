@@ -46,16 +46,15 @@ export class AppComponent {
     this.action = this.getAction();
     this.times = this.getLastTimes();
 
+    this.calcOutput();
+  }
 
+  calcOutput() {
     // group dates by day YYYY-MM-DD
     const daysMap = this.groupBy(this.times, i => i.time.split('T')[0]);
     daysMap.forEach((value, key) => {
       this.days.push({ day: key, times: value });
     });
-
-
-    /*  const startAndEnd = this.calcSartAndEndTime(Duration.fromObject({ hours: 8.23 }));
-     console.log(startAndEnd); */
   }
 
   checkInOut() {
@@ -70,6 +69,8 @@ export class AppComponent {
     }
     this.setAction(this.action);
     this.times = this.saveTimes(timeString, this.action);
+
+    this.calcOutput();
   }
 
   getAction() {
@@ -193,8 +194,8 @@ export class AppComponent {
     const workAndBreak = duration.plus(breakTime);
     const endTime = startTime.plus(workAndBreak);
     return {
-      start: startTime.toObject(),
-      end: endTime.toObject()
+      start: startTime,
+      end: endTime
     };
   }
 
@@ -212,8 +213,9 @@ export class AppComponent {
 
   getTimesForTheDay(times: Itime[]) {
     const worktime = this.checkInAndOutCorrectForDay(times);
-    console.log('getTimesForTheDay', worktime.isValid)
-    return this.calcSartAndEndTime(worktime);
+    console.log('getTimesForTheDay', worktime.isValid);
+    const { start, end } = this.calcSartAndEndTime(worktime);
+    return `${start.toFormat('HH:mm')} - ${end.toFormat('HH:mm')}`;
   }
 
   // TODO:

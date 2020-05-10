@@ -1,39 +1,61 @@
-.btn-action,
-.btn-clear {
-  cursor: pointer;
+@import './grid.scss';
+
+.header {
+  position: fixed;
+  top: 0;
+  z-index: 1;
+  background: #000;
   color: #fff;
-}
 
-.btn-action {
-  font-size: 5rem;
-  background-color: gray;
-
-  &.cheched-in {
-    background-color: green;
-  }
-}
-
-
-.btn-clear {
-  font-size: 1rem;
-  background-color: red;
-}
-
-.days-list {
-  .list-header {
-    list-style: none;
-    font-size: larger;
+  .toolbar-spacer {
+    flex: 1 1 auto;
   }
 
-  .list-footer {
-    list-style: none;
+  .header-status {
+    padding-left: 1rem;
   }
 
-  .time-overdue {
+  .delete-icon {
     color: red;
   }
+}
 
-  .forgot-check-out {
+.content {
+  flex: 1 0 auto;
+  margin-top: 64px;
+  overflow: hidden;
+}
+
+.checked-in {
+  background-color: green;
+}
+
+.checked-in-text {
+  color: green;
+}
+
+.checked-out-text {
+  color: gray;
+}
+
+.time-overdue {
+  color: red;
+
+  .mat-icon {
+    color: red;
+  }
+}
+
+.forgot-check-out {
+  color: green;
+
+  .mat-icon {
     color: green;
   }
+}
+
+.mat-subheader.list-header {
+  background: #171819eb;
+  color: #fff;
+  font-size: larger;
 }

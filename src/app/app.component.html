@@ -1,25 +1,38 @@
-<header></header>
-<main>
-  <div>{{currentTime.toISO()}}</div>
-  <button class="btn-action" [ngClass]="{'cheched-in': action === 'checkIn'}"
-    (click)="checkInOut()">{{(action === 'checkIn')?'Check-Out':'Check-In'}}</button>
-  <button class="btn-clear" (click)="clearTimes()">Clear Times</button>
-  <div>Status: {{(action === 'checkIn')?'checked-in':'checked-out'}}</div>
-  <!-- <ol>
-    <li *ngFor="let item of times">{{item.time | date:'dd.MM - HH:mm:ss'}}: {{item.action}}</li>
-  </ol> -->
+<mat-toolbar class="header">
+  <button [ngClass]="{'checked-in': action === 'checkIn'}" (click)="checkInOut()"
+    mat-raised-button>{{(action === 'checkIn')?'Check-Out':'Check-In'}}</button>
+  <span class="header-status"
+    [ngClass]="{'checked-in-text': action === 'checkIn' , 'checked-out-text': action === 'checkOut'}">Status:
+    {{(action === 'checkIn')?'checked-in':'checked-out'}}</span>
 
-  <ul class="days-list" *ngFor="let item of days">
-    <!-- <li *ngFor="let item of times">{{item.time | date:'dd.MM - HH:mm:ss'}}: {{item.action}}</li> -->
-    <li class="list-header">{{item.day}}</li>
-    <li *ngFor="let t of item.times; first as isFirst; last as isLast">
-      <span
-        [ngClass]="{'time-overdue': isFirst && t.action === 'checkOut', 'forgot-check-out': isLast && t.action === 'checkIn'}">
-        {{t.time | date:'dd.MM - HH:mm:ss'}} - {{t.action}}</span>
-    </li>
-    <li class="list-footer">
-      <span>Working time: {{checkInAndOutCorrectForDay(item.times).as('hours')}} - hours</span>
-      <span>{{getTimesForTheDay(item.times) | json}}</span>
-    </li>
-  </ul>
+  <span class="toolbar-spacer"></span>
+  <span>{{currentTime.toFormat('yyyy-MM-dd - HH:mm')}}</span>
+
+
+  <button mat-button aria-label="Clear Times" matTooltip="Clear all Times">
+    <mat-icon class="delete-icon" aria-hidden="false" aria-label="delete icon">delete</mat-icon>
+    Clear Times
+  </button>
+</mat-toolbar>
+
+
+<main class="content">
+  <div class="flex-grid">
+    <div class="col" *ngFor="let item of days">
+      <mat-list>
+        <div class="list-header" mat-subheader>{{item.day}}</div>
+        <div mat-subheader>{{getTimesForTheDay(item.times)}}</div>
+        <div mat-subheader>Working time: {{checkInAndOutCorrectForDay(item.times).as('hours') | number}} - hours</div>
+        <mat-divider></mat-divider>
+        <mat-list-item *ngFor="let t of item.times; first as isFirst; last as isLast"
+          [ngClass]="{'time-overdue': isFirst && t.action === 'checkOut', 'forgot-check-out': isLast && t.action === 'checkIn'}">
+          <mat-icon *ngIf="t.action === 'checkOut'" mat-list-icon>calendar_today</mat-icon>
+          <mat-icon *ngIf="t.action === 'checkIn'" mat-list-icon>event_available</mat-icon>
+          <div mat-line>{{t.action}}</div>
+          <div mat-line> {{t.time | date:'HH:mm:ss'}}</div>
+        </mat-list-item>
+      </mat-list>
+    </div>
+  </div>
+
 </main>
