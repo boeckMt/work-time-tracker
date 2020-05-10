@@ -16,16 +16,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'time-recording-to-xlsx'`, () => {
+  it(`should have as title 'twork-time-tracker'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('time-recording-to-xlsx');
+    expect(app.title).toEqual('twork-time-tracker');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('.content span').textContent).toContain('time-recording-to-xlsx app is running!');
+    expect(compiled.querySelector('.content span').textContent).toContain('twork-time-tracker app is running!');
   });
 });

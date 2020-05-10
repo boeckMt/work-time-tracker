@@ -1,6 +1,9 @@
-# TimeRecordingToXlsx
+# Work time tracker
 
-- https://moment.github.io/luxon/docs/manual/tour.html#creating-a-datetime
+This app stores times in the local storage of the Browser and calculate working time for days.
+
+- [luxon js](https://moment.github.io/luxon/docs/manual/tour.html#creating-a-datetime)
+- [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage)
 
 
 

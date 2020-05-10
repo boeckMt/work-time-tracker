@@ -1,9 +1,9 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
-  "version": 1, 
+  "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "time-recording-to-xlsx": {
+    "twork-time-tracker": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/time-recording-to-xlsx",
+            "outputPath": "dist/twork-time-tracker",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -62,18 +62,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "time-recording-to-xlsx:build"
+            "browserTarget": "twork-time-tracker:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "time-recording-to-xlsx:build:production"
+              "browserTarget": "twork-time-tracker:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "time-recording-to-xlsx:build"
+            "browserTarget": "twork-time-tracker:build"
           }
         },
         "test": {
@@ -110,15 +110,15 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "time-recording-to-xlsx:serve"
+            "devServerTarget": "twork-time-tracker:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "time-recording-to-xlsx:serve:production"
+              "devServerTarget": "twork-time-tracker:serve:production"
             }
           }
         }
       }
     }},
-  "defaultProject": "time-recording-to-xlsx"
+  "defaultProject": "twork-time-tracker"
 }

@@ -10,7 +10,7 @@ describe('workspace-project App', () => {
 
   it('should display welcome message', () => {
     page.navigateTo();
-    expect(page.getTitleText()).toEqual('time-recording-to-xlsx app is running!');
+    expect(page.getTitleText()).toEqual('twork-time-tracker app is running!');
   });
 
   afterEach(async () => {

@@ -1,6 +1,6 @@
 {
-  "name": "time-recording-to-xlsx",
-  "version": "0.0.0",
+  "name": "twork-time-tracker",
+  "version": "0.0.1",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

@@ -34,6 +34,7 @@ export class AppComponent {
 
 
   currentTime = DateTime.local();
+  title: string = 'twork-time-tracker';
   timesKey = 'time-recording-times';
   actionKey = 'time-recording-action';
   action: actionType = null;
@@ -214,4 +215,9 @@ export class AppComponent {
     console.log('getTimesForTheDay', worktime.isValid)
     return this.calcSartAndEndTime(worktime);
   }
+
+  // TODO:
+  /**
+   * https://developer.mozilla.org/en-US/docs/Web/API/StorageManager/persist
+   */
 }
