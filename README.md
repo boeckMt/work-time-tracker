@@ -10,6 +10,12 @@ TODO: check for better storage (https://web.dev/storage-for-the-web/)
 - https://github.com/dfahlander/Dexie.js
 
 
+## PWA
+- build with --base-href /work-time-tracker/
+- set scope /work-time-tracker/
+- set start_url /work-time-tracker/
+
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
