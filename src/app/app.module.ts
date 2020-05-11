@@ -12,6 +12,13 @@ import { MatListModule } from '@angular/material/list';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialogModule } from '@angular/material/dialog';
 import { InfoDialogComponent } from './info-dialog/info-dialog.component';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+
+
+// PWA
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
+import { PwaHelper } from './pwa.helper';
 
 @NgModule({
   declarations: [
@@ -26,9 +33,11 @@ import { InfoDialogComponent } from './info-dialog/info-dialog.component';
     MatButtonModule,
     MatListModule,
     MatTooltipModule,
-    MatDialogModule
+    MatDialogModule,
+    MatSnackBarModule,
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
-  providers: [],
+  providers: [PwaHelper],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

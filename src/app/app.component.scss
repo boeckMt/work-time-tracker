@@ -1,5 +1,10 @@
 @import './grid.scss';
 
+:root {
+  --headerHeight: 64px;
+}
+
+
 .header {
   position: fixed;
   top: 0;
@@ -21,9 +26,11 @@
 }
 
 .content {
+  position: relative;
   flex: 1 0 auto;
-  margin-top: 64px;
+  margin-top: var(--headerHeight);
   overflow: hidden;
+  height: calc(100% - var(--headerHeight));
 }
 
 .checked-in {

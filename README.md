@@ -6,6 +6,8 @@ This app stores times in the local storage of the Browser and calculate working 
 - [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage)
 
 
+TODO: check for better storage (https://web.dev/storage-for-the-web/)
+- https://github.com/dfahlander/Dexie.js
 
 
 ## Development server

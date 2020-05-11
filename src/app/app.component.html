@@ -9,7 +9,7 @@
   <span>{{currentTime.toFormat('yyyy-MM-dd - HH:mm')}}</span>
 
 
-  <button mat-button aria-label="Clear Times" matTooltip="Clear all Times">
+  <button mat-button aria-label="Clear Times" matTooltip="Clear all Times" (click)="clearTimes()">
     <mat-icon class="delete-icon" aria-hidden="false" aria-label="delete icon">delete</mat-icon>
     Clear Times
   </button>

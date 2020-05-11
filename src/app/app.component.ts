@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { DateTime, Duration, DateObjectUnits } from 'luxon';
 import { MatDialog } from '@angular/material/dialog';
 import { InfoDialogComponent } from './info-dialog/info-dialog.component';
+import { PwaHelper } from './pwa.helper';
 
 
 type actionType = 'checkIn' | 'checkOut';
@@ -45,11 +46,11 @@ export class AppComponent {
 
   days: Iday[] = [];
 
-  constructor(public dialog: MatDialog) {
+  constructor(public dialog: MatDialog, private pwaHelper: PwaHelper) {
+    this.pwaHelper.checkUpdates();
     this.action = this.getAction();
     this.times = this.getLastTimes();
     this.openDialog();
-
     this.calcOutput();
   }
 
@@ -119,17 +120,6 @@ export class AppComponent {
     return times;
   }
 
-  savePersist() {
-    if (navigator.storage && navigator.storage.persist) {
-      navigator.storage.persist().then((persistent) => {
-        if (persistent) {
-          console.log('Storage will not be cleared except by explicit user action');
-        } else {
-          console.log('Storage may be cleared by the UA under storage pressure.');
-        }
-      });
-    }
-  }
 
   clearTimes() {
     window.localStorage.removeItem(this.timesKey);
@@ -137,6 +127,8 @@ export class AppComponent {
 
     window.localStorage.removeItem(this.actionKey);
     this.action = null;
+
+    this.days = [];
   }
 
   /**
