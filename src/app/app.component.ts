@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { DateTime, Duration, DateObjectUnits } from 'luxon';
+import { MatDialog } from '@angular/material/dialog';
+import { InfoDialogComponent } from './info-dialog/info-dialog.component';
 
 
 type actionType = 'checkIn' | 'checkOut';
@@ -34,23 +36,41 @@ export class AppComponent {
 
 
   currentTime = DateTime.local();
-  title: string = 'twork-time-tracker';
+  title = 'twork-time-tracker';
   timesKey = 'time-recording-times';
   actionKey = 'time-recording-action';
+  showInfoKey = `time-recording-show-Info`;
   action: actionType = null;
   times: Itime[] = [];
 
   days: Iday[] = [];
 
-  constructor() {
+  constructor(public dialog: MatDialog) {
     this.action = this.getAction();
     this.times = this.getLastTimes();
+    this.openDialog();
 
     this.calcOutput();
   }
 
+  openDialog(): void {
+    const showInfo = window.localStorage.getItem(this.showInfoKey);
+    if (showInfo !== 'false') {
+      const dialogRef = this.dialog.open(InfoDialogComponent, {
+        width: '350px'
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result === true) {
+          window.localStorage.setItem(this.showInfoKey, 'false');
+        }
+      });
+    }
+  }
+
   calcOutput() {
     // group dates by day YYYY-MM-DD
+    this.days = [];
     const daysMap = this.groupBy(this.times, i => i.time.split('T')[0]);
     daysMap.forEach((value, key) => {
       this.days.push({ day: key, times: value });
@@ -99,11 +119,23 @@ export class AppComponent {
     return times;
   }
 
+  savePersist() {
+    if (navigator.storage && navigator.storage.persist) {
+      navigator.storage.persist().then((persistent) => {
+        if (persistent) {
+          console.log('Storage will not be cleared except by explicit user action');
+        } else {
+          console.log('Storage may be cleared by the UA under storage pressure.');
+        }
+      });
+    }
+  }
+
   clearTimes() {
     window.localStorage.removeItem(this.timesKey);
     this.times = [];
 
-    window.localStorage.removeItem(this.actionKey)
+    window.localStorage.removeItem(this.actionKey);
     this.action = null;
   }
 

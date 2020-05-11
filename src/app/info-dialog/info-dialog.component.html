@@ -1,0 +1,11 @@
+<h1 mat-dialog-title>Check Browser Settings!</h1>
+<div mat-dialog-content>
+  <p>Check that your Browser is not removing the localStorage data if you close it!!!</p>
+  <p>Firefox: about:preferences#privacy (Delete cookies and site data when Firefox is closed)</p>
+  <p>Chrome: chrome://settings/content/cookies (Cookies und Websitedaten beim Beenden von Chrome löschen)</p>
+  <p>Edge: edge://settings/clearBrowsingDataOnClose</p>
+</div>
+<div mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="saveClose" cdkFocusInitial>Don't show this again!</button>
+  <button mat-button (click)="onNoClick()">Close</button>
+</div>
