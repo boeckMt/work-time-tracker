@@ -4,8 +4,8 @@
   "theme_color": "#000",
   "background_color": "#000",
   "display": "standalone",
-  "scope": "/",
-  "start_url": "/",
+  "scope": "/work-time-tracker/",
+  "start_url": "/work-time-tracker/",
   "icons": [
     {
       "src": "assets/icons/icon-72x72.png",
