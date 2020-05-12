@@ -10,6 +10,9 @@ TODO: check for better storage (https://web.dev/storage-for-the-web/)
 - https://github.com/dfahlander/Dexie.js
 
 
+TODO: show working hours from checkin to now time
+
+
 ## PWA
 - build with --base-href /work-time-tracker/
 - set scope /work-time-tracker/

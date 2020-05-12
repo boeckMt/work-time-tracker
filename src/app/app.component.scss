@@ -1,8 +1,5 @@
 @import './grid.scss';
 
-:root {
-  --headerHeight: 64px;
-}
 
 
 .header {
@@ -26,6 +23,7 @@
 }
 
 .content {
+  --headerHeight: 64px;
   position: relative;
   flex: 1 0 auto;
   margin-top: var(--headerHeight);

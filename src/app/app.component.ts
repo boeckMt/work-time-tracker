@@ -200,8 +200,13 @@ export class AppComponent {
       const item = times[0];
       if (item.action === 'checkOut') {
         console.log('forgot to checkIn or work over night', times[0]);
+        const d1 = DateTime.fromISO(times[0].time);
+        duration = this.currentTime.diff(d1);
       } else if (item.action === 'checkIn') {
         // wait for a checkOut to get a duration
+        console.log('wait for a checkOut to get a duration')
+        const d1 = DateTime.fromISO(times[0].time);
+        duration = this.currentTime.diff(d1);
       }
     }
     return duration;
