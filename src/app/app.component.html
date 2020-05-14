@@ -2,16 +2,17 @@
   <button [ngClass]="{'checked-in': action === 'checkIn'}" (click)="checkInOut()"
     mat-raised-button>{{(action === 'checkIn')?'Check-Out':'Check-In'}}</button>
   <span class="header-status"
-    [ngClass]="{'checked-in-text': action === 'checkIn' , 'checked-out-text': action === 'checkOut'}">Status:
+    [ngClass]="{'checked-in-text': action === 'checkIn' , 'checked-out-text': action === 'checkOut'}">{{currentTime.toFormat('HH:mm')}}
+    -
     {{(action === 'checkIn')?'checked-in':'checked-out'}}</span>
 
   <span class="toolbar-spacer"></span>
-  <span class="current-time">{{currentTime.toFormat('yyyy-MM-dd - HH:mm')}}</span>
+  <span class="full-time">Totaltime: {{fullWorkingTime.as('hours') | number}}</span>
 
 
   <button mat-button aria-label="Clear Times" matTooltip="Clear all Times" (click)="clearTimes()">
     <mat-icon class="delete-icon" aria-hidden="false" aria-label="delete icon">delete</mat-icon>
-    Clear Times
+    <span class="delete-btn-text">Clear Times</span>
   </button>
 </mat-toolbar>
 
@@ -20,9 +21,9 @@
   <div class="flex-grid">
     <div class="col" *ngFor="let item of days">
       <mat-list>
-        <div class="list-header" mat-subheader>{{item.day}}</div>
-        <div mat-subheader>{{getTimesForTheDay(item.times)}}</div>
-        <div mat-subheader>Working time: {{checkInAndOutCorrectForDay(item.times).as('hours') | number}} - hours</div>
+        <div class="list-header" mat-subheader>{{getWeekDay(item.day)}}: {{item.day}}</div>
+        <div mat-subheader>{{getTimesForTheDay(item)}}</div>
+        <div mat-subheader>Working time: {{item.totalTime.as('hours') | number}} - hours</div>
         <mat-divider></mat-divider>
         <mat-list-item *ngFor="let t of item.times; first as isFirst; last as isLast; let editing = false"
           [ngClass]="{'time-overdue': isFirst && t.action === 'checkOut', 'forgot-check-out': isLast && t.action === 'checkIn'}">
@@ -42,13 +43,7 @@
             <button mat-icon-button aria-label="Edit Time" (click)="t.editing = setEditting(t)">
               <mat-icon>edit</mat-icon>
             </button>
-
           </div>
-
-          <!-- <button mat-icon-button aria-label="Edit Time">
-            <mat-icon>edit</mat-icon>
-          </button> -->
-
         </mat-list-item>
       </mat-list>
     </div>

@@ -15,6 +15,7 @@ interface Itime {
 interface Iday {
   times: Itime[];
   day: string;
+  totalTime: Duration;
 }
 
 @Component({
@@ -46,6 +47,7 @@ export class AppComponent {
   times: Itime[] = [];
 
   days: Iday[] = [];
+  fullWorkingTime: Duration = null;
 
   constructor(public dialog: MatDialog, private pwaHelper: PwaHelper) {
     this.pwaHelper.checkUpdates();
@@ -53,6 +55,20 @@ export class AppComponent {
     this.times = this.getLastTimes();
     this.openDialog();
     this.calcOutput();
+  }
+
+  public getWeekDay(time: string) {
+    const wd = DateTime.fromISO(time).weekday;
+    const weekdays = {
+      1: 'Mo',
+      2: 'Di',
+      3: 'Mi',
+      4: 'Do',
+      5: 'Fr',
+      6: 'Sa',
+      7: 'So'
+    };
+    return weekdays[wd];
   }
 
   public currentEditing(event) {
@@ -119,8 +135,14 @@ export class AppComponent {
     // group dates by day YYYY-MM-DD
     this.days = [];
     const daysMap = this.groupBy(this.times, i => i.time.split('T')[0]);
-    daysMap.forEach((value, key) => {
-      this.days.push({ day: key, times: value });
+    daysMap.forEach((times, day) => {
+      const item = { day, times, totalTime: this.checkInAndOutCorrectForDay(times) };
+      this.days.push(item);
+      if (this.fullWorkingTime === null) {
+        this.fullWorkingTime = item.totalTime;
+      } else {
+        this.fullWorkingTime.plus(item.totalTime);
+      }
     });
   }
 
@@ -303,11 +325,13 @@ export class AppComponent {
     }
   }
 
-  public getTimesForTheDay(times: Itime[]) {
-    const worktime = this.checkInAndOutCorrectForDay(times);
-    // console.log('getTimesForTheDay', worktime.isValid);
-    const { start, end } = this.calcSartAndEndTime(worktime);
-    return `${start.toFormat('HH:mm')} - ${end.toFormat('HH:mm')}`;
+  public getTimesForTheDay(item: Iday) {
+    if (item.totalTime) {
+      const worktime = item.totalTime;
+      // console.log('getTimesForTheDay', worktime.isValid);
+      const { start, end } = this.calcSartAndEndTime(worktime);
+      return `${start.toFormat('HH:mm')} - ${end.toFormat('HH:mm')}`;
+    }
   }
 
   // TODO:
