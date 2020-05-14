@@ -47,7 +47,7 @@ export class AppComponent {
   times: Itime[] = [];
 
   days: Iday[] = [];
-  fullWorkingTime: Duration = null;
+  fullWorkingTime: Duration = Duration.fromMillis(0);
 
   constructor(public dialog: MatDialog, private pwaHelper: PwaHelper) {
     this.pwaHelper.checkUpdates();
@@ -137,12 +137,8 @@ export class AppComponent {
     const daysMap = this.groupBy(this.times, i => i.time.split('T')[0]);
     daysMap.forEach((times, day) => {
       const item = { day, times, totalTime: this.checkInAndOutCorrectForDay(times) };
+      this.fullWorkingTime = this.fullWorkingTime.plus(item.totalTime);
       this.days.push(item);
-      if (this.fullWorkingTime === null) {
-        this.fullWorkingTime = item.totalTime;
-      } else {
-        this.fullWorkingTime.plus(item.totalTime);
-      }
     });
   }
 
