@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 
@@ -13,6 +14,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialogModule } from '@angular/material/dialog';
 import { InfoDialogComponent } from './info-dialog/info-dialog.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatInputModule } from '@angular/material/input';
 
 
 // PWA
@@ -28,6 +30,7 @@ import { PwaHelper } from './pwa.helper';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    FormsModule,
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
@@ -35,6 +38,7 @@ import { PwaHelper } from './pwa.helper';
     MatTooltipModule,
     MatDialogModule,
     MatSnackBarModule,
+    MatInputModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [PwaHelper],

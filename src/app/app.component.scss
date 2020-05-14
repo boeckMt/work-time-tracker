@@ -1,7 +1,6 @@
 @import './grid.scss';
 
 
-
 .header {
   position: fixed;
   top: 0;
@@ -23,11 +22,10 @@
 }
 
 .content {
-  --headerHeight: 64px;
   position: relative;
   flex: 1 0 auto;
   margin-top: var(--headerHeight);
-  overflow: hidden;
+  overflow-y: auto;
   height: calc(100% - var(--headerHeight));
 }
 
@@ -63,4 +61,25 @@
   background: #171819eb;
   color: #fff;
   font-size: larger;
+}
+
+
+@media screen and (max-width: 630px) {
+  .header-status {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 599px) {
+  ::ng-deep:root {
+    --headerHeight: 54px;
+  }
+}
+
+
+
+@media screen and (max-width: 430px) {
+  .current-time {
+    display: none;
+  }
 }

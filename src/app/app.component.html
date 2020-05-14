@@ -6,7 +6,7 @@
     {{(action === 'checkIn')?'checked-in':'checked-out'}}</span>
 
   <span class="toolbar-spacer"></span>
-  <span>{{currentTime.toFormat('yyyy-MM-dd - HH:mm')}}</span>
+  <span class="current-time">{{currentTime.toFormat('yyyy-MM-dd - HH:mm')}}</span>
 
 
   <button mat-button aria-label="Clear Times" matTooltip="Clear all Times" (click)="clearTimes()">
@@ -24,12 +24,31 @@
         <div mat-subheader>{{getTimesForTheDay(item.times)}}</div>
         <div mat-subheader>Working time: {{checkInAndOutCorrectForDay(item.times).as('hours') | number}} - hours</div>
         <mat-divider></mat-divider>
-        <mat-list-item *ngFor="let t of item.times; first as isFirst; last as isLast"
+        <mat-list-item *ngFor="let t of item.times; first as isFirst; last as isLast; let editing = false"
           [ngClass]="{'time-overdue': isFirst && t.action === 'checkOut', 'forgot-check-out': isLast && t.action === 'checkIn'}">
           <mat-icon *ngIf="t.action === 'checkOut'" mat-list-icon>calendar_today</mat-icon>
           <mat-icon *ngIf="t.action === 'checkIn'" mat-list-icon>event_available</mat-icon>
           <div mat-line>{{t.action}}</div>
-          <div mat-line> {{t.time | date:'HH:mm:ss'}}</div>
+          <div mat-line>
+            <ng-container *ngIf="!t.editing">
+              {{t.time | date:'HH:mm:ss'}}
+            </ng-container>
+            <ng-container *ngIf="t['editing']">
+              <mat-form-field class="example-full-width">
+                <mat-label>Favorite food</mat-label>
+                <input matInput (ngModel)="t.time" [value]="t.time" (change)="currentEditing($event)">
+              </mat-form-field>
+            </ng-container>
+            <button mat-icon-button aria-label="Edit Time" (click)="t.editing = setEditting(t)">
+              <mat-icon>edit</mat-icon>
+            </button>
+
+          </div>
+
+          <!-- <button mat-icon-button aria-label="Edit Time">
+            <mat-icon>edit</mat-icon>
+          </button> -->
+
         </mat-list-item>
       </mat-list>
     </div>

@@ -9,6 +9,7 @@ type actionType = 'checkIn' | 'checkOut';
 interface Itime {
   time: string;
   action: actionType;
+  editing: boolean;
 }
 
 interface Iday {
@@ -34,7 +35,7 @@ export class AppComponent {
   weekWorkTime = Duration.fromObject({ hours: 39 });
   maxDayWorkTime = Duration.fromObject({ hours: 10 });
   // -------------------------------------
-
+  editingValue = null;
 
   currentTime = DateTime.local();
   title = 'twork-time-tracker';
@@ -52,6 +53,51 @@ export class AppComponent {
     this.times = this.getLastTimes();
     this.openDialog();
     this.calcOutput();
+  }
+
+  public currentEditing(event) {
+    const value = event.target.value;
+    this.editingValue = value;
+  }
+
+  public setEditting(item: Itime) {
+    let editing = item.editing;
+    if (editing === true && this.editingValue !== null) {
+      if (item.time !== this.editingValue) {
+        const newItem = Object.assign({}, item);
+        newItem.time = this.editingValue;
+        newItem.editing = false;
+        console.log('editing', item, newItem);
+        this.updateItem(item.time, newItem);
+        this.calcOutput();
+      }
+      this.editingValue = null;
+    }
+    editing = !editing;
+    return editing;
+  }
+
+  findItem(time: string) {
+    const indexItem: { item: Itime, index: number } = {
+      item: null,
+      index: null
+    };
+    this.times.map((item, index) => {
+      if (item.time === time) {
+        indexItem.item = item;
+        indexItem.index = index;
+      }
+    });
+    return indexItem;
+  }
+
+  public updateItem(time: string, newItem: Itime) {
+    const indexItem = this.findItem(time);
+    indexItem.item = newItem;
+    if (indexItem.item) {
+      this.times[indexItem.index] = indexItem.item;
+    }
+    this.updateTimes(this.times);
   }
 
   openDialog(): void {
@@ -78,7 +124,7 @@ export class AppComponent {
     });
   }
 
-  checkInOut() {
+  public checkInOut() {
     const currentTime = DateTime.local();
     const timeString = currentTime.toISO();
 
@@ -114,14 +160,19 @@ export class AppComponent {
 
   saveTimes(time: string, action: actionType) {
     const times = this.getLastTimes();
-    const item: Itime = { time, action };
+    const item: Itime = { time, action, editing: false };
     times.push(item);
     window.localStorage.setItem(this.timesKey, JSON.stringify(times));
     return times;
   }
 
+  updateTimes(times: Itime[]) {
+    window.localStorage.setItem(this.timesKey, JSON.stringify(times));
+    return times;
+  }
 
-  clearTimes() {
+
+  public clearTimes() {
     window.localStorage.removeItem(this.timesKey);
     this.times = [];
 
@@ -157,6 +208,7 @@ export class AppComponent {
   private getDayDuaration(times: Itime[]) {
     /** number in minutes */
     const durations: Duration[] = [];
+    const lastItem = times[times.length - 1];
     times.map((item, i) => {
       const nextItem = times[i + 1];
       if (item.action === 'checkIn' && nextItem && nextItem.action === 'checkOut') {
@@ -167,12 +219,19 @@ export class AppComponent {
       }
     });
 
+    if (times.length > 1 && lastItem.action === 'checkIn') {
+      const lasTdur = durations[durations.length - 1];
+
+      const diff = this.currentTime.diff(DateTime.fromISO(lastItem.time));
+      durations.push(diff);
+    }
+
     // sum up
     const duration = durations.reduce((a, b) => a.plus(b), Duration.fromMillis(0));
     return duration;
   }
 
-  checkInAndOutCorrectForDay(times: Itime[]) {
+  public checkInAndOutCorrectForDay(times: Itime[]) {
     let duration: Duration = Duration.fromMillis(0);
     // check if there is a duration for the day, if not -> forgot to checkOut or work over night...
     if (times.length >= 2) {
@@ -180,17 +239,21 @@ export class AppComponent {
       const last = times[times.length - 1];
       // everything is ok
       if (first.action === 'checkIn' && last.action === 'checkOut') {
+        // console.log("first.action === 'checkIn' && last.action === 'checkOut'")
         duration = this.getDayDuaration(times);
-        // forgot to checkOut or work over night
+        // forgot to checkOut or still working
+      } else if (first.action === 'checkIn' && last.action === 'checkIn') {
+        // console.log("first.action === 'checkIn' && last.action === 'checkIn'")
+        const sliceTimes = times; // times.slice(0, times.length - 2);
+        duration = this.getDayDuaration(sliceTimes);
+        // forgot to checkOut last day
       } else if (first.action === 'checkOut' && last.action === 'checkOut') {
+        // console.log("first.action === 'checkOut' && last.action === 'checkOut'")
         const sliceTimes = times.slice(1);
         duration = this.getDayDuaration(sliceTimes);
-        // console.log('forgot to checkIn or work over night', times[0]);
-      } else if (last.action === 'checkIn' && first.action === 'checkIn') {
-        const sliceTimes = times.slice(0, times.length - 2);
-        duration = this.getDayDuaration(sliceTimes);
-        // console.log('forgot to checkOut or work over night', times[times.length - 1]);
+        // forgot to checkOut last day and still working
       } else if (first.action === 'checkOut' && last.action === 'checkIn') {
+        // console.log("first.action === 'checkOut' && last.action === 'checkIn'")
         const sliceTimes = times.slice(1);
         const sliceTimes2 = sliceTimes.slice(0, sliceTimes.length - 2);
         duration = this.getDayDuaration(sliceTimes2);
@@ -229,7 +292,7 @@ export class AppComponent {
   }
 
   private getTimeForBraek(duration: Duration) {
-    console.log('getTimeForBraek', duration);
+    // console.log('getTimeForBraek', duration);
     const durHours = duration.as('hours');
     if (durHours > 6 && durHours <= 9) {
       return Duration.fromObject({ minutes: 30 });
@@ -240,9 +303,9 @@ export class AppComponent {
     }
   }
 
-  getTimesForTheDay(times: Itime[]) {
+  public getTimesForTheDay(times: Itime[]) {
     const worktime = this.checkInAndOutCorrectForDay(times);
-    console.log('getTimesForTheDay', worktime.isValid);
+    // console.log('getTimesForTheDay', worktime.isValid);
     const { start, end } = this.calcSartAndEndTime(worktime);
     return `${start.toFormat('HH:mm')} - ${end.toFormat('HH:mm')}`;
   }
