@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1589488131980,
+  "timestamp": 1589556125120,
   "index": "/work-time-tracker/index.html",
   "assetGroups": [
     {
@@ -10,8 +10,8 @@
       "urls": [
         "/work-time-tracker/favicon.ico",
         "/work-time-tracker/index.html",
-        "/work-time-tracker/main-es2015.00dee9a5fb14fd83d44f.js",
-        "/work-time-tracker/main-es5.00dee9a5fb14fd83d44f.js",
+        "/work-time-tracker/main-es2015.c91c86f7855bf4cac0fd.js",
+        "/work-time-tracker/main-es5.c91c86f7855bf4cac0fd.js",
         "/work-time-tracker/manifest.webmanifest",
         "/work-time-tracker/polyfills-es2015.1f913f16a2d346cc8bdc.js",
         "/work-time-tracker/polyfills-es5.1a3c78b07cd6f16c6e9a.js",
@@ -33,7 +33,8 @@
         "/work-time-tracker/assets/icons/icon-384x384.png",
         "/work-time-tracker/assets/icons/icon-512x512.png",
         "/work-time-tracker/assets/icons/icon-72x72.png",
-        "/work-time-tracker/assets/icons/icon-96x96.png"
+        "/work-time-tracker/assets/icons/icon-96x96.png",
+        "/work-time-tracker/assets/work-time-tracker_example.JPG"
       ],
       "patterns": []
     }
@@ -48,10 +49,11 @@
     "/work-time-tracker/assets/icons/icon-512x512.png": "559d9c4318b45a1f2b10596bbb4c960fe521dbcc",
     "/work-time-tracker/assets/icons/icon-72x72.png": "c457e56089a36952cd67156f9996bc4ce54a5ed9",
     "/work-time-tracker/assets/icons/icon-96x96.png": "3914125a4b445bf111c5627875fc190f560daa41",
+    "/work-time-tracker/assets/work-time-tracker_example.JPG": "fdcd2c2cfe26de30aa155ec6209720ba86d13f9f",
     "/work-time-tracker/favicon.ico": "22f6a4a3bcaafafb0254e0f2fa4ceb89e505e8b2",
-    "/work-time-tracker/index.html": "fcb8d2410a661834a40ab92f7d385cbf7ec1211b",
-    "/work-time-tracker/main-es2015.00dee9a5fb14fd83d44f.js": "687ae651f66ff3af9f8a97ea86eec724f5156332",
-    "/work-time-tracker/main-es5.00dee9a5fb14fd83d44f.js": "a7d26960d177a78ef8ccf1324881a9befdf124ce",
+    "/work-time-tracker/index.html": "0b71fb4eda7c8397f6f49339960d2919597edd1a",
+    "/work-time-tracker/main-es2015.c91c86f7855bf4cac0fd.js": "4522402abc6130c6d6bcaeb9b9d0023aef67f313",
+    "/work-time-tracker/main-es5.c91c86f7855bf4cac0fd.js": "f2f752453507a3b572526dd9ef4e3fef72d33561",
     "/work-time-tracker/manifest.webmanifest": "54678e776d09520a72ae93670901504e13858d81",
     "/work-time-tracker/polyfills-es2015.1f913f16a2d346cc8bdc.js": "72ad4ccc0a3916ae4598199447cdeadd6d380570",
     "/work-time-tracker/polyfills-es5.1a3c78b07cd6f16c6e9a.js": "87006d1f609b94ee122cc7790b1ddb5e03d8eaa6",
