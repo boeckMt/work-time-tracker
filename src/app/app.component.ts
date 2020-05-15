@@ -199,6 +199,7 @@ export class AppComponent {
     this.action = null;
 
     this.days = [];
+    this.fullWorkingTime = Duration.fromMillis(0);
   }
 
   /**
