@@ -13,6 +13,10 @@ TODO: check for better storage (https://web.dev/storage-for-the-web/)
 TODO: show working hours from checkin to now time
 
 
+## Example
+
+![Example Preview](src/assets/work-time-tracker_example.JPG "Example Preview")
+
 ## PWA
 - build with --base-href /work-time-tracker/
 - set scope /work-time-tracker/
