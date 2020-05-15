@@ -136,7 +136,9 @@ export class AppComponent {
     this.fullWorkingTime = Duration.fromMillis(0);
     this.days = [];
     const daysMap = this.groupBy(this.times, i => i.time.split('T')[0]);
-    daysMap.forEach((times, day) => {
+    const daysArray = Array.from(daysMap.keys()).sort();
+    daysArray.forEach(day => {
+      const times = daysMap.get(day);
       const item = { day, times, totalTime: this.checkInAndOutCorrectForDay(times) };
       this.fullWorkingTime = this.fullWorkingTime.plus(item.totalTime);
       this.days.push(item);
