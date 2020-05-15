@@ -133,6 +133,7 @@ export class AppComponent {
 
   calcOutput() {
     // group dates by day YYYY-MM-DD
+    this.fullWorkingTime = Duration.fromMillis(0);
     this.days = [];
     const daysMap = this.groupBy(this.times, i => i.time.split('T')[0]);
     daysMap.forEach((times, day) => {
