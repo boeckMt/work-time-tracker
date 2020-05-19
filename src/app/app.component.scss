@@ -1,6 +1,10 @@
 @import './grid.scss';
 
 
+.delete-icon {
+  color: red;
+}
+
 .header {
   position: fixed;
   top: 0;
@@ -14,10 +18,6 @@
 
   .header-status {
     padding-left: 1rem;
-  }
-
-  .delete-icon {
-    color: red;
   }
 }
 

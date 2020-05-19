@@ -3,19 +3,25 @@ import { DateTime, Duration, DateObjectUnits } from 'luxon';
 import { MatDialog } from '@angular/material/dialog';
 import { InfoDialogComponent } from './info-dialog/info-dialog.component';
 import { PwaHelper } from './pwa.helper';
+import { saveAs } from 'file-saver';
 
 
 type actionType = 'checkIn' | 'checkOut';
 interface Itime {
   time: string;
   action: actionType;
+}
+
+interface ItimeDisplay extends Itime {
   editing: boolean;
 }
 
 interface Iday {
-  times: Itime[];
+  times: ItimeDisplay[];
   day: string;
   totalTime: Duration;
+  calcStart: string;
+  calcEnd: string;
 }
 
 @Component({
@@ -76,7 +82,7 @@ export class AppComponent {
     this.editingValue = value;
   }
 
-  public setEditting(item: Itime) {
+  public setEditting(item: ItimeDisplay) {
     let editing = item.editing;
     if (editing === true && this.editingValue !== null) {
       if (item.time !== this.editingValue) {
@@ -107,9 +113,10 @@ export class AppComponent {
     return indexItem;
   }
 
-  public updateItem(time: string, newItem: Itime) {
+  public updateItem(time: string, newItem: ItimeDisplay) {
     const indexItem = this.findItem(time);
-    indexItem.item = newItem;
+    indexItem.item.time = newItem.time;
+    indexItem.item.action = newItem.action;
     if (indexItem.item) {
       this.times[indexItem.index] = indexItem.item;
     }
@@ -139,7 +146,16 @@ export class AppComponent {
     const daysArray = Array.from(daysMap.keys()).sort();
     daysArray.forEach(day => {
       const times = daysMap.get(day);
-      const item = { day, times, totalTime: this.checkInAndOutCorrectForDay(times) };
+      const displayTimes = times.map(t => {
+        return {
+          time: t.time,
+          action: t.action,
+          editing: false
+        };
+      });
+      const totalTime = this.checkInAndOutCorrectForDay(times);
+      const calcTimes = this.getTimesForTheDay(totalTime);
+      const item: Iday = { day, times: displayTimes, totalTime, calcStart: calcTimes.start.toFormat('HH:mm'), calcEnd: calcTimes.end.toFormat('HH:mm') };
       this.fullWorkingTime = this.fullWorkingTime.plus(item.totalTime);
       this.days.push(item);
     });
@@ -181,7 +197,7 @@ export class AppComponent {
 
   saveTimes(time: string, action: actionType) {
     const times = this.getLastTimes();
-    const item: Itime = { time, action, editing: false };
+    const item: Itime = { time, action };
     times.push(item);
     window.localStorage.setItem(this.timesKey, JSON.stringify(times));
     return times;
@@ -208,7 +224,7 @@ export class AppComponent {
    * group array in days with keyGetter function
    */
   private groupBy(list: Itime[], keyGetter: (item: Itime) => string) {
-    const map = new Map();
+    const map = new Map<string, Itime[]>();
     list.forEach((item) => {
       const key = keyGetter(item);
       const collection = map.get(key);
@@ -325,13 +341,37 @@ export class AppComponent {
     }
   }
 
-  public getTimesForTheDay(item: Iday) {
-    if (item.totalTime) {
-      const worktime = item.totalTime;
+  public getTimesForTheDay(totalTime: Duration) {
+    if (totalTime) {
+      const worktime = totalTime;
       // console.log('getTimesForTheDay', worktime.isValid);
       const { start, end } = this.calcSartAndEndTime(worktime);
-      return `${start.toFormat('HH:mm')} - ${end.toFormat('HH:mm')}`;
+      return {
+        start,
+        end
+      };
     }
+  }
+
+  public exportDays() {
+    const daysExport = this.days.map(d => {
+      return {
+        date: d.day,
+        time: d.totalTime.as('hours'),
+        start: d.calcStart,
+        end: d.calcEnd
+      };
+    });
+    const daysString = JSON.stringify(daysExport);
+    const blob = new Blob([daysString], { type: "text/plain;charset=utf-8" });
+    saveAs(blob, "working-times.json")
+  }
+
+  public exportTimes() {
+    const times = this.getLastTimes();
+    const stringTimes = JSON.stringify(times);
+    const blob = new Blob([stringTimes], { type: "text/plain;charset=utf-8" });
+    saveAs(blob, "times.json")
   }
 
   // TODO:

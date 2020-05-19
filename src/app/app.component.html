@@ -9,11 +9,27 @@
   <span class="toolbar-spacer"></span>
   <span class="full-time">Totaltime: {{fullWorkingTime.as('hours') | number}}</span>
 
-
-  <button mat-button aria-label="Clear Times" matTooltip="Clear all Times" (click)="clearTimes()">
-    <mat-icon class="delete-icon" aria-hidden="false" aria-label="delete icon">delete</mat-icon>
-    <span class="delete-btn-text">Clear Times</span>
+  <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+    <mat-icon>more_vert</mat-icon>
   </button>
+  <mat-menu #menu="matMenu">
+    <button (click)="clearTimes()" matTooltip="Clear all Times" mat-menu-item>
+      <mat-icon class="delete-icon" aria-hidden="false" aria-label="delete icon">delete</mat-icon>
+      <span>Clear Times</span>
+    </button>
+    <button (click)="exportDays()" matTooltip="Export Working Daytimes" mat-menu-item>
+      <mat-icon>save</mat-icon>
+      <span>Export Days</span>
+    </button>
+    <button (click)="exportTimes()" matTooltip="Export raw Times" mat-menu-item>
+      <mat-icon>save</mat-icon>
+      <span>Export Times</span>
+    </button>
+    <button mat-menu-item disabled>
+      <mat-icon>open_in_browser</mat-icon>
+      <span>Load Times</span>
+    </button>
+  </mat-menu>
 </mat-toolbar>
 
 
@@ -22,7 +38,7 @@
     <div class="col" *ngFor="let item of days">
       <mat-list>
         <div class="list-header" mat-subheader>{{getWeekDay(item.day)}}: {{item.day}}</div>
-        <div mat-subheader>{{getTimesForTheDay(item)}}</div>
+        <div mat-subheader>{{item.calcStart}} - {{item.calcEnd}}</div>
         <div mat-subheader>Working time: {{item.totalTime.as('hours') | number}} - hours</div>
         <mat-divider></mat-divider>
         <mat-list-item *ngFor="let t of item.times; first as isFirst; last as isLast; let editing = false"

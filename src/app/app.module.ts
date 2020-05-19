@@ -15,6 +15,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { InfoDialogComponent } from './info-dialog/info-dialog.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 
 
 // PWA
@@ -39,6 +40,7 @@ import { PwaHelper } from './pwa.helper';
     MatDialogModule,
     MatSnackBarModule,
     MatInputModule,
+    MatMenuModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [PwaHelper],
