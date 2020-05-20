@@ -362,16 +362,18 @@ export class AppComponent {
         end: d.calcEnd
       };
     });
+    const filename = `working-times_${this.days[0].day}_${this.days[this.days.length - 1].day}.json`;
     const daysString = JSON.stringify(daysExport);
     const blob = new Blob([daysString], { type: "text/plain;charset=utf-8" });
-    saveAs(blob, "working-times.json")
+    saveAs(blob, filename)
   }
 
   public exportTimes() {
     const times = this.getLastTimes();
+    const filename = `check-in-out-times_${this.days[0].day}_${this.days[this.days.length - 1].day}.json`;
     const stringTimes = JSON.stringify(times);
     const blob = new Blob([stringTimes], { type: "text/plain;charset=utf-8" });
-    saveAs(blob, "times.json")
+    saveAs(blob, filename)
   }
 
   // TODO:
