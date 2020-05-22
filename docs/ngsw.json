@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1589930654171,
+  "timestamp": 1590142875973,
   "index": "/work-time-tracker/index.html",
   "assetGroups": [
     {
@@ -10,8 +10,8 @@
       "urls": [
         "/work-time-tracker/favicon.ico",
         "/work-time-tracker/index.html",
-        "/work-time-tracker/main-es2015.75b2126bb1d3089540c1.js",
-        "/work-time-tracker/main-es5.75b2126bb1d3089540c1.js",
+        "/work-time-tracker/main-es2015.7b4da26186f8f8776fd0.js",
+        "/work-time-tracker/main-es5.7b4da26186f8f8776fd0.js",
         "/work-time-tracker/manifest.webmanifest",
         "/work-time-tracker/polyfills-es2015.1f913f16a2d346cc8bdc.js",
         "/work-time-tracker/polyfills-es5.1a3c78b07cd6f16c6e9a.js",
@@ -51,9 +51,9 @@
     "/work-time-tracker/assets/icons/icon-96x96.png": "3914125a4b445bf111c5627875fc190f560daa41",
     "/work-time-tracker/assets/work-time-tracker_example.JPG": "fdcd2c2cfe26de30aa155ec6209720ba86d13f9f",
     "/work-time-tracker/favicon.ico": "22f6a4a3bcaafafb0254e0f2fa4ceb89e505e8b2",
-    "/work-time-tracker/index.html": "9b8c0c8b4a7ac672586afaa7ba62b3ab9b15f4e7",
-    "/work-time-tracker/main-es2015.75b2126bb1d3089540c1.js": "cfafec7e861686be3f983d10f59aeb3261824051",
-    "/work-time-tracker/main-es5.75b2126bb1d3089540c1.js": "a36db3cd0be26fd5aa61a9ea1b30e68e9f31ffd0",
+    "/work-time-tracker/index.html": "054974ce19fed8629c424cf346321ad3ce332aa7",
+    "/work-time-tracker/main-es2015.7b4da26186f8f8776fd0.js": "db9be975af4c714718d5f233fed7e867f6af078c",
+    "/work-time-tracker/main-es5.7b4da26186f8f8776fd0.js": "44f0b471cea61c253f0244fc64a5f411701e9395",
     "/work-time-tracker/manifest.webmanifest": "54678e776d09520a72ae93670901504e13858d81",
     "/work-time-tracker/polyfills-es2015.1f913f16a2d346cc8bdc.js": "72ad4ccc0a3916ae4598199447cdeadd6d380570",
     "/work-time-tracker/polyfills-es5.1a3c78b07cd6f16c6e9a.js": "87006d1f609b94ee122cc7790b1ddb5e03d8eaa6",
