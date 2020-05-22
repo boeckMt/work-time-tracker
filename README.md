@@ -2,15 +2,27 @@
 
 This app stores times in the local storage of the Browser and calculate working time for days.
 
+
+**Used Techniques**
+- [angular](https://github.com/angular/angular)
+- [Angular Material](https://material.angular.io/)
 - [luxon js](https://moment.github.io/luxon/docs/manual/tour.html#creating-a-datetime)
 - [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage)
+- [FileReader API](https://developer.mozilla.org/de/docs/Web/API/FileReader)
+- [file-saver](https://github.com/eligrey/FileSaver.js)
+
+**load file**
+- https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer
+- paste string in form
+- https://developer.mozilla.org/de/docs/Web/API/File/Zugriff_auf_Dateien_von_Webapplikationen
+- https://developer.mozilla.org/de/docs/Web/API/FileReader
+- https://www.npmjs.com/package/@tanker/file-reader
+- https://www.npmjs.com/package/promise-json-file-reader
+- https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsText
 
 
-TODO: check for better storage (https://web.dev/storage-for-the-web/)
+## TODO: check for better storage (https://web.dev/storage-for-the-web/)
 - https://github.com/dfahlander/Dexie.js
-
-
-TODO: show working hours from checkin to now time
 
 
 ## Example
