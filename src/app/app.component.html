@@ -4,7 +4,7 @@
   <span class="header-status"
     [ngClass]="{'checked-in-text': action === 'checkIn' , 'checked-out-text': action === 'checkOut'}">{{currentTime.toFormat('HH:mm')}}
     -
-    {{(action === 'checkIn')?'checked-in':'checked-out'}}</span>
+    {{(action === 'checkIn')?'checked in':'checked out'}}</span>
 
   <span class="toolbar-spacer"></span>
   <span class="full-time">Totaltime: {{fullWorkingTime.as('hours') | number}}</span>
@@ -13,22 +13,23 @@
     <mat-icon>more_vert</mat-icon>
   </button>
   <mat-menu #menu="matMenu">
-    <button (click)="clearTimes()" matTooltip="Clear all Times" mat-menu-item>
+    <button (click)="clearTimes()" matTooltip="Clear all times in the storage" mat-menu-item>
       <mat-icon class="delete-icon" aria-hidden="false" aria-label="delete icon">delete</mat-icon>
       <span>Clear Times</span>
     </button>
-    <button (click)="exportDays()" matTooltip="Export Working Daytimes" mat-menu-item>
+    <button (click)="exportDays()" matTooltip="Export calculated times for days" mat-menu-item>
       <mat-icon>save</mat-icon>
-      <span>Export Days</span>
+      <span>Export calculated Times</span>
     </button>
-    <button (click)="exportTimes()" matTooltip="Export raw Times" mat-menu-item>
-      <mat-icon>save</mat-icon>
-      <span>Export Times</span>
+    <button (click)="exportTimes()" matTooltip="Save raw checked-in-out times" mat-menu-item>
+      <mat-icon>save_alt</mat-icon>
+      <span>Save raw Times</span>
     </button>
-    <button mat-menu-item disabled>
+    <button (click)="openFile($event)" matTooltip="Load raw checked-in-out times from file" mat-menu-item>
       <mat-icon>open_in_browser</mat-icon>
-      <span>Load Times</span>
+      <span>Load raw Times</span>
     </button>
+    <input type="file" style="display:none" (change)="handleFileInput($event)" accept=".json" #fileInput>
   </mat-menu>
 </mat-toolbar>
 
@@ -56,7 +57,7 @@
                 <input matInput (ngModel)="t.time" [value]="t.time" (change)="currentEditing($event)">
               </mat-form-field>
             </ng-container>
-            <button mat-icon-button aria-label="Edit Time" (click)="t.editing = setEditting(t)">
+            <button mat-icon-button matTooltip="Edit time" aria-label="Edit Time" (click)="t.editing = setEditting(t)">
               <mat-icon>edit</mat-icon>
             </button>
           </div>

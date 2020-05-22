@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { DateTime, Duration, DateObjectUnits } from 'luxon';
 import { MatDialog } from '@angular/material/dialog';
 import { InfoDialogComponent } from './info-dialog/info-dialog.component';
 import { PwaHelper } from './pwa.helper';
 import { saveAs } from 'file-saver';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 
 type actionType = 'checkIn' | 'checkOut';
@@ -55,10 +56,10 @@ export class AppComponent {
   days: Iday[] = [];
   fullWorkingTime: Duration = Duration.fromMillis(0);
 
-  constructor(public dialog: MatDialog, private pwaHelper: PwaHelper) {
+  @ViewChild('fileInput') fileInput: ElementRef;
+
+  constructor(public dialog: MatDialog, private pwaHelper: PwaHelper, private snackbar: MatSnackBar) {
     this.pwaHelper.checkUpdates();
-    this.action = this.getAction();
-    this.times = this.getLastTimes();
     this.openDialog();
     this.calcOutput();
   }
@@ -139,6 +140,9 @@ export class AppComponent {
   }
 
   calcOutput() {
+    this.action = this.getAction();
+    this.times = this.getLastTimes();
+
     // group dates by day YYYY-MM-DD
     this.fullWorkingTime = Duration.fromMillis(0);
     this.days = [];
@@ -172,7 +176,7 @@ export class AppComponent {
       this.action = 'checkOut';
     }
     this.setAction(this.action);
-    this.times = this.saveTimes(timeString, this.action);
+    this.times = this.saveTime(timeString, this.action);
 
     this.calcOutput();
   }
@@ -195,15 +199,19 @@ export class AppComponent {
     }
   }
 
-  saveTimes(time: string, action: actionType) {
+  saveTime(time: string, action: actionType) {
     const times = this.getLastTimes();
     const item: Itime = { time, action };
     times.push(item);
-    window.localStorage.setItem(this.timesKey, JSON.stringify(times));
-    return times;
+    return this.updateTimes(times);
   }
 
-  updateTimes(times: Itime[]) {
+  updateTimes(times: Itime[], add: boolean = false) {
+    if (add) {
+      const oldTimes = this.getLastTimes();
+      times = oldTimes.concat(times);
+    }
+
     window.localStorage.setItem(this.timesKey, JSON.stringify(times));
     return times;
   }
@@ -305,7 +313,7 @@ export class AppComponent {
         duration = this.currentTime.diff(d1);
       } else if (item.action === 'checkIn') {
         // wait for a checkOut to get a duration
-        console.log('wait for a checkOut to get a duration')
+        console.log('wait for a checkOut to get a duration');
         const d1 = DateTime.fromISO(times[0].time);
         duration = this.currentTime.diff(d1);
       }
@@ -364,16 +372,58 @@ export class AppComponent {
     });
     const filename = `working-times_${this.days[0].day}_${this.days[this.days.length - 1].day}.json`;
     const daysString = JSON.stringify(daysExport);
-    const blob = new Blob([daysString], { type: "text/plain;charset=utf-8" });
-    saveAs(blob, filename)
+    const blob = new Blob([daysString], { type: 'text/plain;charset=utf-8' });
+    saveAs(blob, filename);
   }
 
   public exportTimes() {
     const times = this.getLastTimes();
     const filename = `check-in-out-times_${this.days[0].day}_${this.days[this.days.length - 1].day}.json`;
     const stringTimes = JSON.stringify(times);
-    const blob = new Blob([stringTimes], { type: "text/plain;charset=utf-8" });
-    saveAs(blob, filename)
+    const blob = new Blob([stringTimes], { type: 'text/plain;charset=utf-8' });
+    saveAs(blob, filename);
+  }
+
+
+  /**
+   * https://developer.mozilla.org/de/docs/Web/API/File/Zugriff_auf_Dateien_von_Webapplikationen
+   */
+  public openFile(evt) {
+    if (this.fileInput.nativeElement) {
+      console.log(this.fileInput.nativeElement)
+      this.fileInput.nativeElement.click();
+    }
+    evt.preventDefault();
+  }
+
+  public handleFileInput(evt) {
+    const files = evt.target.files;
+    this.readInputJson(files[0]);
+  }
+
+  readInputJson(file) {
+    // Check if the file is an image.
+    if (file.type && file.type.indexOf('json') === -1) {
+      console.log('File is not in json format.', file.type, file);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.addEventListener('load', (event) => {
+      const loadedTimes = event.target.result.toString();
+      const jsonTimes = JSON.parse(loadedTimes);
+      if (Array.isArray(jsonTimes) && jsonTimes.length > 0) {
+        const first = jsonTimes[0];
+        if (first.hasOwnProperty('action') && first.hasOwnProperty('time')) {
+          this.updateTimes(jsonTimes, true);
+          this.calcOutput();
+        } else {
+          this.snackbar.open(`The json file is not in the right format Array<{time: string, action: actionType}>`);
+        }
+      }
+
+    });
+    reader.readAsText(file, 'UTF-8')
   }
 
   // TODO:
