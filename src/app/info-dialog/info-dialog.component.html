@@ -1,9 +1,15 @@
-<h1 mat-dialog-title>Check Browser Settings!</h1>
+<h1 mat-dialog-title>Check Browser Settings!!!</h1>
 <div mat-dialog-content>
   <p>Check that your Browser is not removing the localStorage data if you close it!!!</p>
   <p>Firefox: about:preferences#privacy (Delete cookies and site data when Firefox is closed)</p>
   <p>Chrome: chrome://settings/content/cookies (Cookies und Websitedaten beim Beenden von Chrome löschen)</p>
   <p>Edge: edge://settings/clearBrowsingDataOnClose</p>
+  <hr>
+  <h3>About this App</h3>
+  <p>This app is saving all times between check-in and check-out in the localStorage.</p>
+  <p>Then it is calculating the total time of this times.</p>
+  <p>Then it calculates a Start- and End-time (start is set to 8:00) which adds the time for the break (30min after 6h and 45min after 9h).</p>
+  <p>If only two times (check-in and check-out) then a break time is removed from total time.</p>
 </div>
 <div mat-dialog-actions>
   <button mat-button [mat-dialog-close]="saveClose" cdkFocusInitial>Don't show this again!</button>
