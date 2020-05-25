@@ -27,7 +27,7 @@ This app stores times in the local storage of the Browser and calculate working 
 
 ## Example
 
-![Example Preview](src/assets/work-time-tracker_example.JPG "Example Preview")
+[![Example Preview](src/assets/work-time-tracker_example.JPG "Example Preview")](https://boeckmt.github.io/work-time-tracker/)
 
 ## PWA
 - build with --base-href /work-time-tracker/

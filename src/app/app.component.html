@@ -40,7 +40,8 @@
       <mat-list>
         <div class="list-header" mat-subheader>{{getWeekDay(item.day)}}: {{item.day}}</div>
         <div mat-subheader>{{item.calcStart}} - {{item.calcEnd}}</div>
-        <div mat-subheader>Working time: {{item.totalTime.as('hours') | number}} - hours</div>
+        <!-- <div mat-subheader>Working time: {{item.totalTime.as('hours') | number}} - hours</div> -->
+        <div mat-subheader>Working time: {{formatDurHHmm(item.totalTime)}}</div>
         <mat-divider></mat-divider>
         <mat-list-item *ngFor="let t of item.times; first as isFirst; last as isLast; let editing = false"
           [ngClass]="{'time-overdue': isFirst && t.action === 'checkOut', 'forgot-check-out': isLast && t.action === 'checkIn'}">
