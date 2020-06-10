@@ -63,6 +63,10 @@
   font-size: larger;
 }
 
+input:invalid{
+  color:red;
+ }
+
 
 @media screen and (max-width: 630px) {
   .header-status {

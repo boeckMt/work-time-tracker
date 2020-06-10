@@ -58,6 +58,12 @@ export class AppComponent {
 
   @ViewChild('fileInput') fileInput: ElementRef;
 
+
+  public dateInputPattern = `([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2})`;
+  public dateTimeLocaleForamt = 'yyyy-MM-ddTHH:mm';
+
+
+
   constructor(public dialog: MatDialog, private pwaHelper: PwaHelper, private snackbar: MatSnackBar) {
     this.pwaHelper.checkUpdates();
     this.openDialog();
@@ -78,10 +84,10 @@ export class AppComponent {
     return weekdays[wd];
   }
 
-  public formatDurHHmm(duration: Duration){
+  public formatDurHHmm(duration: Duration) {
     const hhmm = duration.toFormat('hh mm').split(' ');
     let time = `${hhmm[0]}h`;
-    if(hhmm[1] !==  '00'){
+    if (hhmm[1] !== '00') {
       time = `${hhmm[0]}h ${hhmm[1]}min`;
     }
     return time;
@@ -97,7 +103,11 @@ export class AppComponent {
     if (editing === true && this.editingValue !== null && DateTime.fromISO(this.editingValue).isValid) {
       if (item.time !== this.editingValue) {
         const newItem = Object.assign({}, item);
-        newItem.time = this.editingValue;
+        const oldtime = DateTime.fromISO(newItem.time);
+        // convert from datepicker adjusted time back to iso and add seconds and millisecond
+        let covertLocaleToIso = DateTime.fromISO(this.editingValue);
+        covertLocaleToIso = covertLocaleToIso.set({ second: oldtime.get('second'), millisecond: oldtime.get('millisecond') });
+        newItem.time = covertLocaleToIso.toISO();
         newItem.editing = false;
         // console.log('editing', item, newItem);
         this.updateItem(item.time, newItem);
@@ -301,16 +311,16 @@ export class AppComponent {
         calcTimes = this.calcSartAndEndTime(duration);
 
         // if only 2 items for a day and more the 6h or 9h remove TimeForBraek
-        if(times.length === 2){
+        if (times.length === 2) {
           const breakTime = this.getTimeForBraek(duration);
-          if(breakTime.as('hours') > 0){
+          if (breakTime.as('hours') > 0) {
             // first calc times then remove break from duration
             calcTimes = this.calcSartAndEndTime(duration, false);
             duration = duration.minus(breakTime);
           }
           // console.log('>>>>>>>', breakTime.as('hours'));
         }
-        
+
         // forgot to checkOut or still working
       } else if (first.action === 'checkIn' && last.action === 'checkIn') {
         // console.log("first.action === 'checkIn' && last.action === 'checkIn'")
@@ -364,7 +374,7 @@ export class AppComponent {
     if (addAndBreak) {
       const breakTime = this.getTimeForBraek(duration);
       workAndBreak = duration.plus(breakTime);
-    }else{
+    } else {
       workAndBreak = duration;
     }
 

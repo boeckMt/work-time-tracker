@@ -54,8 +54,9 @@
             </ng-container>
             <ng-container *ngIf="t['editing']">
               <mat-form-field class="example-full-width">
-                <mat-label>Favorite food</mat-label>
-                <input matInput (ngModel)="t.time" [value]="t.time" (change)="currentEditing($event)">
+                <mat-label>Set datetime-local</mat-label>
+                <input type="datetime-local" matInput (ngModel)="t.time" [value]="t.time | date: dateTimeLocaleForamt"
+                  [pattern]="dateInputPattern" (change)="currentEditing($event)" required>
               </mat-form-field>
             </ng-container>
             <button mat-icon-button matTooltip="Edit time" aria-label="Edit Time" (click)="t.editing = setEditting(t)">
