@@ -1,36 +1,33 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { DateTime, Duration, DateObjectUnits } from 'luxon';
 import { MatDialog } from '@angular/material/dialog';
 import { InfoDialogComponent } from './info-dialog/info-dialog.component';
 import { PwaHelper } from './pwa.helper';
 import { saveAs } from 'file-saver';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { FormControl } from '@angular/forms';
+import { Subscription } from 'rxjs';
+import { formatDurHHmm, getWeekDay, groupBy, actionType, Itime, Iday, ItimeDisplay, calcStartAndEndTime, getTimeForBraek } from './utils';
 
-
-type actionType = 'checkIn' | 'checkOut';
-interface Itime {
-  time: string;
-  action: actionType;
-}
-
-interface ItimeDisplay extends Itime {
-  editing: boolean;
-}
-
-interface Iday {
-  times: ItimeDisplay[];
-  day: string;
-  totalTime: Duration;
-  calcStart: string;
-  calcEnd: string;
-}
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit, OnDestroy {
+
+
+
+  constructor(public dialog: MatDialog, private pwaHelper: PwaHelper, private snackbar: MatSnackBar) {
+    this.pwaHelper.checkUpdates();
+    const targetTime = this.getTargetTime();
+    if (targetTime) {
+      this.targetDayWorkingTime.setValue(targetTime);
+    }
+    this.openDialog();
+    this.calcOutput();
+  }
 
   // Gleitende Arbeitszeit (BO)
   /**
@@ -50,47 +47,34 @@ export class AppComponent {
   timesKey = 'time-recording-times';
   actionKey = 'time-recording-action';
   showInfoKey = `time-recording-show-Info`;
+  targetTimeKey = `time-recording-target-time`;
   action: actionType = null;
   times: Itime[] = [];
 
   days: Iday[] = [];
   fullWorkingTime: Duration = Duration.fromMillis(0);
+  fullWorkingDiff: Duration = Duration.fromMillis(0);
 
+  targetDayWorkingTime = new FormControl(null);
+  sub: Subscription;
   @ViewChild('fileInput') fileInput: ElementRef;
-
 
   public dateInputPattern = `([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2})`;
   public dateTimeLocaleForamt = 'yyyy-MM-ddTHH:mm';
 
+  public getWeekDay = getWeekDay;
 
+  public formatDurHHmm = formatDurHHmm;
 
-  constructor(public dialog: MatDialog, private pwaHelper: PwaHelper, private snackbar: MatSnackBar) {
-    this.pwaHelper.checkUpdates();
-    this.openDialog();
-    this.calcOutput();
+  ngOnInit(): void {
+    this.sub = this.targetDayWorkingTime.valueChanges.subscribe((targetTime) => {
+      this.setTargetTime(targetTime);
+      this.calcOutput();
+    });
   }
 
-  public getWeekDay(time: string) {
-    const wd = DateTime.fromISO(time).weekday;
-    const weekdays = {
-      1: 'Mo',
-      2: 'Di',
-      3: 'Mi',
-      4: 'Do',
-      5: 'Fr',
-      6: 'Sa',
-      7: 'So'
-    };
-    return weekdays[wd];
-  }
-
-  public formatDurHHmm(duration: Duration) {
-    const hhmm = duration.toFormat('hh mm').split(' ');
-    let time = `${hhmm[0]}h`;
-    if (hhmm[1] !== '00') {
-      time = `${hhmm[0]}h ${hhmm[1]}min`;
-    }
-    return time;
+  ngOnDestroy(): void {
+    this.sub.unsubscribe();
   }
 
   public currentEditing(event) {
@@ -121,7 +105,74 @@ export class AppComponent {
     return editing;
   }
 
-  findItem(time: string) {
+  public checkInOut() {
+    const currentTime = DateTime.local();
+    const timeString = currentTime.toISO();
+
+    if (!this.action || this.action === 'checkOut') {
+      this.action = 'checkIn';
+
+    } else if (this.action === 'checkIn') {
+      this.action = 'checkOut';
+    }
+    this.setAction(this.action);
+    this.times = this.saveTime(timeString, this.action);
+
+    this.calcOutput();
+  }
+
+
+  public clearTimes() {
+    window.localStorage.removeItem(this.timesKey);
+    this.times = [];
+
+    window.localStorage.removeItem(this.actionKey);
+    this.action = null;
+
+    this.days = [];
+    this.fullWorkingTime = Duration.fromMillis(0);
+  }
+
+  public exportDays() {
+    const daysExport = this.days.map(d => {
+      return {
+        date: d.day,
+        time: d.totalTime.as('hours'),
+        start: d.calcStart,
+        end: d.calcEnd
+      };
+    });
+    const filename = `working-times_${this.days[0].day}_${this.days[this.days.length - 1].day}.json`;
+    const daysString = JSON.stringify(daysExport);
+    const blob = new Blob([daysString], { type: 'text/plain;charset=utf-8' });
+    saveAs(blob, filename);
+  }
+
+  public exportTimes() {
+    const times = this.getLastTimes();
+    const filename = `check-in-out-times_${this.days[0].day}_${this.days[this.days.length - 1].day}.json`;
+    const stringTimes = JSON.stringify(times);
+    const blob = new Blob([stringTimes], { type: 'text/plain;charset=utf-8' });
+    saveAs(blob, filename);
+  }
+
+  /**
+   * https://developer.mozilla.org/de/docs/Web/API/File/Zugriff_auf_Dateien_von_Webapplikationen
+   */
+  public openFile(evt) {
+    if (this.fileInput.nativeElement) {
+      // console.log(this.fileInput.nativeElement);
+      this.fileInput.nativeElement.click();
+    }
+    evt.preventDefault();
+  }
+
+  public handleFileInput(evt) {
+    const files = evt.target.files;
+    this.readInputJson(files[0]);
+  }
+
+  findItemInTimes(time: string) {
     const indexItem: { item: Itime, index: number } = {
       item: null,
       index: null
@@ -135,8 +186,8 @@ export class AppComponent {
     return indexItem;
   }
 
-  public updateItem(time: string, newItem: ItimeDisplay) {
-    const indexItem = this.findItem(time);
+  updateItem(time: string, newItem: ItimeDisplay) {
+    const indexItem = this.findItemInTimes(time);
     indexItem.item.time = newItem.time;
     indexItem.item.action = newItem.action;
     if (indexItem.item) {
@@ -164,10 +215,12 @@ export class AppComponent {
     this.action = this.getAction();
     this.times = this.getLastTimes();
 
-    // group dates by day YYYY-MM-DD
+
     this.fullWorkingTime = Duration.fromMillis(0);
+    this.fullWorkingDiff = Duration.fromMillis(0);
     this.days = [];
-    const daysMap = this.groupBy(this.times, i => i.time.split('T')[0]);
+    // group dates by day YYYY-MM-DD
+    const daysMap = groupBy(this.times, i => i.time.split('T')[0]);
     const daysArray = Array.from(daysMap.keys()).sort();
     daysArray.forEach(day => {
       const times = daysMap.get(day);
@@ -179,35 +232,102 @@ export class AppComponent {
         };
       });
       const timeAndCalc = this.checkInAndOutCorrectForDay(times);
-      const item: Iday = { day, times: displayTimes, totalTime: timeAndCalc.duration, calcStart: timeAndCalc.calcTimes.start.toFormat('HH:mm'), calcEnd: timeAndCalc.calcTimes.end.toFormat('HH:mm') };
+      const item: Iday = {
+        day,
+        times: displayTimes,
+        totalTime: timeAndCalc.duration,
+        calcStart: timeAndCalc.calcTimes.start.toFormat('HH:mm'),
+        calcEnd: timeAndCalc.calcTimes.end.toFormat('HH:mm')
+      };
+      const targetTime = parseFloat(this.targetDayWorkingTime.value);
+      if (targetTime) {
+        const targetDur = Duration.fromObject({ hours: targetTime });
+        item.targetDiff = item.totalTime.minus(targetDur);
+        // console.log('target diff', item.targetDiff.toObject());
+        this.fullWorkingDiff = this.fullWorkingDiff.plus(item.targetDiff);
+      }
       this.fullWorkingTime = this.fullWorkingTime.plus(item.totalTime);
       this.days.push(item);
     });
   }
 
-  public checkInOut() {
-    const currentTime = DateTime.local();
-    const timeString = currentTime.toISO();
+  /**
+   * sum up times between checkIn - checkOut
+   *
+   * check what to do if day starts with checkOut?? -> forgot to checkOut or work over night...
+   * what to do if day ends with checkIn?? -> forgot to checkOut or work over night...
+   */
+  getDayDuaration(times: Itime[]) {
+    /** number in minutes */
+    const durations: Duration[] = [];
+    const lastItem = times[times.length - 1];
+    times.map((item, i) => {
+      const nextItem = times[i + 1];
+      if (item.action === 'checkIn' && nextItem && nextItem.action === 'checkOut') {
+        const d1 = DateTime.fromISO(item.time);
+        const d2 = DateTime.fromISO(nextItem.time);
+        const diff = d2.diff(d1);
+        durations.push(diff);
+      }
+    });
 
-    if (!this.action || this.action === 'checkOut') {
-      this.action = 'checkIn';
+    if (times.length > 1 && lastItem.action === 'checkIn') {
+      const lasTdur = durations[durations.length - 1];
 
-    } else if (this.action === 'checkIn') {
-      this.action = 'checkOut';
+      const diff = this.currentTime.diff(DateTime.fromISO(lastItem.time));
+      durations.push(diff);
     }
-    this.setAction(this.action);
-    this.times = this.saveTime(timeString, this.action);
 
-    this.calcOutput();
+    // sum up
+    const duration = durations.reduce((a, b) => a.plus(b), Duration.fromMillis(0));
+    return duration;
+  }
+
+
+  readInputJson(file) {
+    // Check if the file is an image.
+    if (file.type && file.type.indexOf('json') === -1) {
+      console.log('File is not in json format.', file.type, file);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.addEventListener('load', (event) => {
+      const loadedTimes = event.target.result.toString();
+      const jsonTimes = JSON.parse(loadedTimes);
+      if (Array.isArray(jsonTimes) && jsonTimes.length > 0) {
+        const first = jsonTimes[0];
+        if (first.hasOwnProperty('action') && first.hasOwnProperty('time')) {
+          this.updateTimes(jsonTimes, true);
+          this.calcOutput();
+        } else {
+          this.snackbar.open(`The json file is not in the right format Array<{time: string, action: actionType}>`);
+        }
+      }
+
+    });
+    reader.readAsText(file, 'UTF-8');
+  }
+
+
+  setAction(action: actionType) {
+    window.localStorage.setItem(this.actionKey, action);
   }
 
   getAction() {
     return window.localStorage.getItem(this.actionKey) as actionType;
   }
 
-  setAction(action: actionType) {
-    window.localStorage.setItem(this.actionKey, action);
+
+  setTargetTime(time: string) {
+    window.localStorage.setItem(this.targetTimeKey, time);
   }
+
+  getTargetTime() {
+    return window.localStorage.getItem(this.targetTimeKey);
+  }
+
+
 
 
   getLastTimes(): Itime[] {
@@ -237,69 +357,9 @@ export class AppComponent {
   }
 
 
-  public clearTimes() {
-    window.localStorage.removeItem(this.timesKey);
-    this.times = [];
-
-    window.localStorage.removeItem(this.actionKey);
-    this.action = null;
-
-    this.days = [];
-    this.fullWorkingTime = Duration.fromMillis(0);
-  }
-
-  /**
-   * group array in days with keyGetter function
-   */
-  private groupBy(list: Itime[], keyGetter: (item: Itime) => string) {
-    const map = new Map<string, Itime[]>();
-    list.forEach((item) => {
-      const key = keyGetter(item);
-      const collection = map.get(key);
-      if (!collection) {
-        map.set(key, [item]);
-      } else {
-        collection.push(item);
-      }
-    });
-    return map;
-  }
-
-  /**
-   * sum up times between checkIn - checkOut
-   *
-   * check what to do if day starts with checkOut?? -> forgot to checkOut or work over night...
-   * what to do if day ends with checkIn?? -> forgot to checkOut or work over night...
-   */
-  private getDayDuaration(times: Itime[]) {
-    /** number in minutes */
-    const durations: Duration[] = [];
-    const lastItem = times[times.length - 1];
-    times.map((item, i) => {
-      const nextItem = times[i + 1];
-      if (item.action === 'checkIn' && nextItem && nextItem.action === 'checkOut') {
-        const d1 = DateTime.fromISO(item.time);
-        const d2 = DateTime.fromISO(nextItem.time);
-        const diff = d2.diff(d1);
-        durations.push(diff);
-      }
-    });
-
-    if (times.length > 1 && lastItem.action === 'checkIn') {
-      const lasTdur = durations[durations.length - 1];
-
-      const diff = this.currentTime.diff(DateTime.fromISO(lastItem.time));
-      durations.push(diff);
-    }
-
-    // sum up
-    const duration = durations.reduce((a, b) => a.plus(b), Duration.fromMillis(0));
-    return duration;
-  }
-
-  public checkInAndOutCorrectForDay(times: Itime[]) {
+  checkInAndOutCorrectForDay(times: Itime[]) {
     let duration: Duration = Duration.fromMillis(0);
-    let calcTimes = { start: null, end: null }
+    let calcTimes = { start: null, end: null };
     // check if there is a duration for the day, if not -> forgot to checkOut or work over night...
     if (times.length >= 2) {
       const first = times[0];
@@ -308,14 +368,14 @@ export class AppComponent {
       if (first.action === 'checkIn' && last.action === 'checkOut') {
         // console.log("first.action === 'checkIn' && last.action === 'checkOut'")
         duration = this.getDayDuaration(times);
-        calcTimes = this.calcSartAndEndTime(duration);
+        calcTimes = calcStartAndEndTime(duration);
 
         // if only 2 items for a day and more the 6h or 9h remove TimeForBraek
         if (times.length === 2) {
-          const breakTime = this.getTimeForBraek(duration);
+          const breakTime = getTimeForBraek(duration);
           if (breakTime.as('hours') > 0) {
             // first calc times then remove break from duration
-            calcTimes = this.calcSartAndEndTime(duration, false);
+            calcTimes = calcStartAndEndTime(duration, false);
             duration = duration.minus(breakTime);
           }
           // console.log('>>>>>>>', breakTime.as('hours'));
@@ -326,20 +386,20 @@ export class AppComponent {
         // console.log("first.action === 'checkIn' && last.action === 'checkIn'")
         const sliceTimes = times; // times.slice(0, times.length - 2);
         duration = this.getDayDuaration(sliceTimes);
-        calcTimes = this.calcSartAndEndTime(duration);
+        calcTimes = calcStartAndEndTime(duration);
         // forgot to checkOut last day
       } else if (first.action === 'checkOut' && last.action === 'checkOut') {
         // console.log("first.action === 'checkOut' && last.action === 'checkOut'")
         const sliceTimes = times.slice(1);
         duration = this.getDayDuaration(sliceTimes);
-        calcTimes = this.calcSartAndEndTime(duration);
+        calcTimes = calcStartAndEndTime(duration);
         // forgot to checkOut last day and still working
       } else if (first.action === 'checkOut' && last.action === 'checkIn') {
         // console.log("first.action === 'checkOut' && last.action === 'checkIn'")
         const sliceTimes = times.slice(1);
         const sliceTimes2 = sliceTimes.slice(0, sliceTimes.length - 2);
         duration = this.getDayDuaration(sliceTimes2);
-        calcTimes = this.calcSartAndEndTime(duration);
+        calcTimes = calcStartAndEndTime(duration);
       }
     } else if (times.length === 1) {
       // check if the single date was checkIn or checkOut
@@ -348,120 +408,23 @@ export class AppComponent {
         console.log('forgot to checkIn or work over night', times[0]);
         const d1 = DateTime.fromISO(times[0].time);
         duration = this.currentTime.diff(d1);
-        calcTimes = this.calcSartAndEndTime(duration);
+        calcTimes = calcStartAndEndTime(duration);
       } else if (item.action === 'checkIn') {
         // wait for a checkOut to get a duration
         console.log('wait for a checkOut to get a duration');
         const d1 = DateTime.fromISO(times[0].time);
         duration = this.currentTime.diff(d1);
-        calcTimes = this.calcSartAndEndTime(duration);
+        calcTimes = calcStartAndEndTime(duration);
       }
     }
 
     return {
       duration,
       calcTimes
-    }
-  }
-
-  private calcSartAndEndTime(duration: Duration, addAndBreak = true, start: DateObjectUnits = { hour: 8, minute: 0, second: 0, millisecond: 0 }) {
-    const current = DateTime.local();
-    const startTime = current.set(start);
-    if (!duration.isValid) {
-      return;
-    }
-    let workAndBreak;
-    if (addAndBreak) {
-      const breakTime = this.getTimeForBraek(duration);
-      workAndBreak = duration.plus(breakTime);
-    } else {
-      workAndBreak = duration;
-    }
-
-    const endTime = startTime.plus(workAndBreak);
-    return {
-      start: startTime,
-      end: endTime
     };
   }
 
-  private getTimeForBraek(duration: Duration) {
-    // console.log('getTimeForBraek', duration);
-    const durHours = duration.as('hours');
-    if (durHours > 6 && durHours <= 9) {
-      return Duration.fromObject({ minutes: 30 });
-    } else if (durHours > 9) {
-      return Duration.fromObject({ minutes: 45 });
-    } else {
-      return Duration.fromMillis(0);
-    }
-  }
 
-
-  public exportDays() {
-    const daysExport = this.days.map(d => {
-      return {
-        date: d.day,
-        time: d.totalTime.as('hours'),
-        start: d.calcStart,
-        end: d.calcEnd
-      };
-    });
-    const filename = `working-times_${this.days[0].day}_${this.days[this.days.length - 1].day}.json`;
-    const daysString = JSON.stringify(daysExport);
-    const blob = new Blob([daysString], { type: 'text/plain;charset=utf-8' });
-    saveAs(blob, filename);
-  }
-
-  public exportTimes() {
-    const times = this.getLastTimes();
-    const filename = `check-in-out-times_${this.days[0].day}_${this.days[this.days.length - 1].day}.json`;
-    const stringTimes = JSON.stringify(times);
-    const blob = new Blob([stringTimes], { type: 'text/plain;charset=utf-8' });
-    saveAs(blob, filename);
-  }
-
-
-  /**
-   * https://developer.mozilla.org/de/docs/Web/API/File/Zugriff_auf_Dateien_von_Webapplikationen
-   */
-  public openFile(evt) {
-    if (this.fileInput.nativeElement) {
-      console.log(this.fileInput.nativeElement)
-      this.fileInput.nativeElement.click();
-    }
-    evt.preventDefault();
-  }
-
-  public handleFileInput(evt) {
-    const files = evt.target.files;
-    this.readInputJson(files[0]);
-  }
-
-  readInputJson(file) {
-    // Check if the file is an image.
-    if (file.type && file.type.indexOf('json') === -1) {
-      console.log('File is not in json format.', file.type, file);
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.addEventListener('load', (event) => {
-      const loadedTimes = event.target.result.toString();
-      const jsonTimes = JSON.parse(loadedTimes);
-      if (Array.isArray(jsonTimes) && jsonTimes.length > 0) {
-        const first = jsonTimes[0];
-        if (first.hasOwnProperty('action') && first.hasOwnProperty('time')) {
-          this.updateTimes(jsonTimes, true);
-          this.calcOutput();
-        } else {
-          this.snackbar.open(`The json file is not in the right format Array<{time: string, action: actionType}>`);
-        }
-      }
-
-    });
-    reader.readAsText(file, 'UTF-8')
-  }
 
   // TODO:
   /**

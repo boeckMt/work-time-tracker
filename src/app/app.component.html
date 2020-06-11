@@ -8,6 +8,7 @@
 
   <span class="toolbar-spacer"></span>
   <span class="full-time">Totaltime: {{fullWorkingTime.as('hours') | number}}</span>
+  <span class="full-time" *ngIf="fullWorkingDiff.valueOf()">. Diff: {{formatDurHHmm(fullWorkingDiff)}}</span>
 
   <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
     <mat-icon>more_vert</mat-icon>
@@ -30,6 +31,13 @@
       <span>Load raw Times</span>
     </button>
     <input type="file" style="display:none" (change)="handleFileInput($event)" accept=".json" #fileInput>
+
+    <div (click)="$event.stopPropagation()" class="set-target-time">
+      <div>Target day working time (h)</div>
+      <div><input type="number" pattern="" min="0" max="24" [formControl]="targetDayWorkingTime" placeholder="8"
+          name="targetTime">
+      </div>
+    </div>
   </mat-menu>
 </mat-toolbar>
 
@@ -37,11 +45,12 @@
 <main class="content">
   <div class="flex-grid">
     <div class="col" *ngFor="let item of days">
-      <mat-list>
+      <mat-list class="list">
         <div class="list-header" mat-subheader>{{getWeekDay(item.day)}}: {{item.day}}</div>
-        <div mat-subheader>{{item.calcStart}} - {{item.calcEnd}}</div>
+        <div mat-subheader class="item-header">{{item.calcStart}} - {{item.calcEnd}}</div>
         <!-- <div mat-subheader>Working time: {{item.totalTime.as('hours') | number}} - hours</div> -->
-        <div mat-subheader>Working time: {{formatDurHHmm(item.totalTime)}}</div>
+        <div mat-subheader class="item-header">Working time: {{formatDurHHmm(item.totalTime)}}</div>
+        <div mat-subheader class="item-header" *ngIf="item.targetDiff">Diff: {{ formatDurHHmm(item.targetDiff)}}</div>
         <mat-divider></mat-divider>
         <mat-list-item *ngFor="let t of item.times; first as isFirst; last as isLast; let editing = false"
           [ngClass]="{'time-overdue': isFirst && t.action === 'checkOut', 'forgot-check-out': isLast && t.action === 'checkIn'}">

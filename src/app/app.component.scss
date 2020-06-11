@@ -63,9 +63,19 @@
   font-size: larger;
 }
 
-input:invalid{
-  color:red;
- }
+input:invalid {
+  color: red;
+}
+
+.set-target-time > div {
+  padding-left: 1rem;
+}
+
+.list .item-header:nth-child(n+2){
+  padding-top: 5px;
+  padding-bottom: 0px;
+  height: 35px;
+}
 
 
 @media screen and (max-width: 630px) {
