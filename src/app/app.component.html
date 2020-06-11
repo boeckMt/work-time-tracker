@@ -34,7 +34,7 @@
 
     <div (click)="$event.stopPropagation()" class="set-target-time">
       <div>Target day working time (h)</div>
-      <div><input type="number" pattern="" min="0" max="24" [formControl]="targetDayWorkingTime" placeholder="8"
+      <div><input type="number" pattern="" min="0" max="24" [formControl]="targetDayWorkingTime" step="0.1" placeholder="8"
           name="targetTime">
       </div>
     </div>
