@@ -67,6 +67,9 @@
                 <input type="datetime-local" matInput (ngModel)="t.time" [value]="t.time | date: dateTimeLocaleForamt"
                   [pattern]="dateInputPattern" (change)="currentEditing($event)" required>
               </mat-form-field>
+              <button mat-icon-button aria-label="delete item" (click)="deleteItem(t.time)">
+                <mat-icon class="delete-icon" aria-hidden="false" aria-label="delete icon">delete</mat-icon>
+              </button>
             </ng-container>
             <button mat-icon-button matTooltip="Edit time" aria-label="Edit Time" (click)="t.editing = setEditting(t)">
               <mat-icon>edit</mat-icon>
