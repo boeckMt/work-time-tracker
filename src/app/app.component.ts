@@ -186,6 +186,13 @@ export class AppComponent implements OnInit, OnDestroy {
     return indexItem;
   }
 
+  deleteItem(time: string){
+    const filtered = this.times.filter(i => i.time !== time);
+    this.times = filtered;
+    this.updateTimes(this.times);
+    this.calcOutput();
+  }
+
   updateItem(time: string, newItem: ItimeDisplay) {
     const indexItem = this.findItemInTimes(time);
     indexItem.item.time = newItem.time;
