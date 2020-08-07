@@ -1,23 +1,26 @@
 {
   "configVersion": 1,
-  "timestamp": 1591915053544,
+  "timestamp": 1596837993453,
   "index": "/work-time-tracker/index.html",
   "assetGroups": [
     {
       "name": "app",
       "installMode": "prefetch",
       "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
       "urls": [
         "/work-time-tracker/favicon.ico",
         "/work-time-tracker/index.html",
-        "/work-time-tracker/main-es2015.92360b4f1b216bb0c0e2.js",
-        "/work-time-tracker/main-es5.92360b4f1b216bb0c0e2.js",
+        "/work-time-tracker/main-es2015.0a5170d45c2e6a2d082e.js",
+        "/work-time-tracker/main-es5.0a5170d45c2e6a2d082e.js",
         "/work-time-tracker/manifest.webmanifest",
-        "/work-time-tracker/polyfills-es2015.1f913f16a2d346cc8bdc.js",
-        "/work-time-tracker/polyfills-es5.1a3c78b07cd6f16c6e9a.js",
-        "/work-time-tracker/runtime-es2015.0811dcefd377500b5b1a.js",
-        "/work-time-tracker/runtime-es5.0811dcefd377500b5b1a.js",
-        "/work-time-tracker/styles.b51ee96b0c05a88412ab.css"
+        "/work-time-tracker/polyfills-es2015.95bb65e853d2781ac3bd.js",
+        "/work-time-tracker/polyfills-es5.341d48ffc88eaeae911d.js",
+        "/work-time-tracker/runtime-es2015.409e6590615fb48d139f.js",
+        "/work-time-tracker/runtime-es5.409e6590615fb48d139f.js",
+        "/work-time-tracker/styles.0aac7fdcfe52c2edd367.css"
       ],
       "patterns": []
     },
@@ -25,6 +28,9 @@
       "name": "assets",
       "installMode": "lazy",
       "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
       "urls": [
         "/work-time-tracker/assets/icons/icon-128x128.png",
         "/work-time-tracker/assets/icons/icon-144x144.png",
@@ -51,15 +57,15 @@
     "/work-time-tracker/assets/icons/icon-96x96.png": "3914125a4b445bf111c5627875fc190f560daa41",
     "/work-time-tracker/assets/work-time-tracker_example.JPG": "fdcd2c2cfe26de30aa155ec6209720ba86d13f9f",
     "/work-time-tracker/favicon.ico": "22f6a4a3bcaafafb0254e0f2fa4ceb89e505e8b2",
-    "/work-time-tracker/index.html": "dfc2a6af4d6c0a0c97edc8cce8f30bc0fece5f78",
-    "/work-time-tracker/main-es2015.92360b4f1b216bb0c0e2.js": "9985a3c6ed2d0a60de8af06ef9048e4d96bdf402",
-    "/work-time-tracker/main-es5.92360b4f1b216bb0c0e2.js": "a9154dc2ac92b49d720b42cc1665073c33df3b8d",
+    "/work-time-tracker/index.html": "f65b572dc2af55b470554154660d2650e83bb66b",
+    "/work-time-tracker/main-es2015.0a5170d45c2e6a2d082e.js": "27c4fb137e1441a5989893f28b1f9ef520bf52f9",
+    "/work-time-tracker/main-es5.0a5170d45c2e6a2d082e.js": "8c570b9597073bd8ab56bf88d0e771e8210ea6bf",
     "/work-time-tracker/manifest.webmanifest": "54678e776d09520a72ae93670901504e13858d81",
-    "/work-time-tracker/polyfills-es2015.1f913f16a2d346cc8bdc.js": "72ad4ccc0a3916ae4598199447cdeadd6d380570",
-    "/work-time-tracker/polyfills-es5.1a3c78b07cd6f16c6e9a.js": "87006d1f609b94ee122cc7790b1ddb5e03d8eaa6",
-    "/work-time-tracker/runtime-es2015.0811dcefd377500b5b1a.js": "a9aafcf49f49145093fc831efd9b8e2f6c71bb9c",
-    "/work-time-tracker/runtime-es5.0811dcefd377500b5b1a.js": "a9aafcf49f49145093fc831efd9b8e2f6c71bb9c",
-    "/work-time-tracker/styles.b51ee96b0c05a88412ab.css": "d7a6c0f9329a75819afe72b6a3fc8375afdbac9b"
+    "/work-time-tracker/polyfills-es2015.95bb65e853d2781ac3bd.js": "72ad4ccc0a3916ae4598199447cdeadd6d380570",
+    "/work-time-tracker/polyfills-es5.341d48ffc88eaeae911d.js": "ff14d90e08622190714660721edab5f43578829a",
+    "/work-time-tracker/runtime-es2015.409e6590615fb48d139f.js": "a9aafcf49f49145093fc831efd9b8e2f6c71bb9c",
+    "/work-time-tracker/runtime-es5.409e6590615fb48d139f.js": "a9aafcf49f49145093fc831efd9b8e2f6c71bb9c",
+    "/work-time-tracker/styles.0aac7fdcfe52c2edd367.css": "054427152480c3f16c8ba2c290131f737a237907"
   },
   "navigationUrls": [
     {

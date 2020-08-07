@@ -127,5 +127,8 @@
       }
     }
   },
-  "defaultProject": "twork-time-tracker"
+  "defaultProject": "twork-time-tracker",
+  "cli": {
+    "analytics": false
+  }
 }
