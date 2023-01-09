@@ -24,7 +24,7 @@
     "@angular/router": "~10.0.8",
     "@angular/service-worker": "~10.0.8",
     "file-saver": "^2.0.2",
-    "luxon": "^1.24.1",
+    "luxon": "^2.5.2",
     "rxjs": "~6.6.2",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.2"
